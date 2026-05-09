@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# JS / tooling
+node_modules/
+
+# Local backend venv
+backend/.venv/
