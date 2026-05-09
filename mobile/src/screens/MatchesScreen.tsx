@@ -1,0 +1,102 @@
+import React, { useCallback, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../api/client';
+import type { MatchWithPreview } from '../api/types';
+import { colors } from '../theme/colors';
+
+export function MatchesScreen() {
+  const navigation = useNavigation();
+  const { apiToken } = useAuth();
+  const [rows, setRows] = useState<MatchWithPreview[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    try {
+      const data = await api.getMatches(apiToken);
+      setRows(data);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiToken]);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
+
+  if (loading && rows.length === 0) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={rows}
+      keyExtractor={(item) => item.match.id}
+      refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
+      contentContainerStyle={styles.list}
+      ListEmptyComponent={
+        <Text style={styles.empty}>No matches yet — keep swiping on Discover.</Text>
+      }
+      renderItem={({ item }) => (
+        <Pressable
+          style={styles.row}
+          onPress={() =>
+            navigation
+              .getParent()
+              ?.navigate('Chat', { matchId: item.match.id, title: item.other_user.name })
+          }
+        >
+          <Image
+            source={{
+              uri: item.other_user.photo_url ?? 'https://picsum.photos/seed/m/100/100',
+            }}
+            style={styles.avatar}
+          />
+          <View style={styles.rowBody}>
+            <Text style={styles.name}>{item.other_user.name}</Text>
+            <Text style={styles.preview} numberOfLines={1}>
+              {item.last_message_preview ?? 'Say hi and suggest a game'}
+            </Text>
+          </View>
+        </Pressable>
+      )}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  list: { padding: 12 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.border },
+  rowBody: { marginLeft: 12, flex: 1 },
+  name: { fontWeight: '700', fontSize: 16, color: colors.text },
+  preview: { color: colors.textSecondary, marginTop: 4 },
+  empty: { textAlign: 'center', color: colors.textSecondary, marginTop: 40 },
+});

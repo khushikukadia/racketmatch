@@ -1,0 +1,255 @@
+import React, { useState } from 'react';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../api/client';
+import type { Priority, SkillLevel, Sport } from '../api/types';
+import { colors } from '../theme/colors';
+
+const SPORTS: Sport[] = ['tennis', 'squash', 'pickleball'];
+const SKILLS: SkillLevel[] = ['beginner', 'intermediate', 'advanced'];
+const PRIORITY_UI: { label: string; value: Priority }[] = [
+  { label: 'Play more', value: 'high' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'Play less', value: 'low' },
+];
+const TIMES = ['morning', 'afternoon', 'evening', 'night', 'weekends'];
+
+type SportForm = {
+  enabled: boolean;
+  skill: SkillLevel;
+  priority: Priority;
+  times: string[];
+  locations: string;
+};
+
+const defaultSport = (): SportForm => ({
+  enabled: false,
+  skill: 'intermediate',
+  priority: 'medium',
+  times: ['weekends'],
+  locations: '',
+});
+
+export function OnboardingScreen() {
+  const { apiToken, refreshProfileGate } = useAuth();
+  const [name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [city, setCity] = useState('');
+  const [photoUrl, setPhotoUrl] = useState('');
+  const [bySport, setBySport] = useState<Record<Sport, SportForm>>({
+    tennis: { ...defaultSport(), enabled: true },
+    squash: defaultSport(),
+    pickleball: defaultSport(),
+  });
+  const [busy, setBusy] = useState(false);
+
+  const toggleTime = (sport: Sport, t: string) => {
+    setBySport((prev) => {
+      const cur = prev[sport];
+      const has = cur.times.includes(t);
+      const times = has ? cur.times.filter((x) => x !== t) : [...cur.times, t];
+      return { ...prev, [sport]: { ...cur, times } };
+    });
+  };
+
+  const save = async () => {
+    if (!name.trim()) {
+      Alert.alert('Name required', 'Add your name to continue.');
+      return;
+    }
+    const sportsPayload = SPORTS.filter((s) => bySport[s].enabled).map((s) => {
+      const f = bySport[s];
+      const locs = f.locations
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean);
+      return {
+        sport: s,
+        skill_level: f.skill,
+        priority: f.priority,
+        preferred_times: f.times.length ? f.times : ['weekends'],
+        preferred_locations: locs.length ? locs : [city.trim() || 'TBD'],
+      };
+    });
+    if (sportsPayload.length === 0) {
+      Alert.alert('Sports', 'Select at least one sport.');
+      return;
+    }
+    setBusy(true);
+    try {
+      await api.updateProfile(apiToken, {
+        name: name.trim(),
+        bio: bio.trim() || null,
+        city: city.trim() || null,
+        photo_url: photoUrl.trim() || null,
+      });
+      await api.updateSports(apiToken, sportsPayload);
+      await refreshProfileGate();
+    } catch (e) {
+      Alert.alert('Error', e instanceof Error ? e.message : 'Could not save profile');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <ScrollView style={styles.root} contentContainerStyle={styles.inner}>
+      <Text style={styles.h1}>Build your player card</Text>
+      <Text style={styles.sub}>Squash, tennis, pickleball — show how you like to play.</Text>
+
+      <Text style={styles.label}>Name *</Text>
+      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Your name" />
+
+      <Text style={styles.label}>Bio</Text>
+      <TextInput
+        style={[styles.input, styles.tall]}
+        value={bio}
+        onChangeText={setBio}
+        placeholder="Favorite courts, playing style…"
+        multiline
+      />
+
+      <Text style={styles.label}>City</Text>
+      <TextInput style={styles.input} value={city} onChangeText={setCity} placeholder="e.g. Oakland" />
+
+      <Text style={styles.label}>Profile photo URL (optional)</Text>
+      <TextInput
+        style={styles.input}
+        value={photoUrl}
+        onChangeText={setPhotoUrl}
+        placeholder="https://… (Supabase Storage public URL)"
+        autoCapitalize="none"
+      />
+      <Text style={styles.hint}>Upload images via Supabase Storage in production; paste the public URL here for MVP.</Text>
+
+      {SPORTS.map((sport) => {
+        const f = bySport[sport];
+        return (
+          <View key={sport} style={styles.card}>
+            <Pressable
+              style={styles.rowBetween}
+              onPress={() =>
+                setBySport((p) => ({ ...p, [sport]: { ...f, enabled: !f.enabled } }))
+              }
+            >
+              <Text style={styles.sportTitle}>{sport}</Text>
+              <Text style={styles.toggle}>{f.enabled ? '✓' : '＋'}</Text>
+            </Pressable>
+            {f.enabled ? (
+              <>
+                <Text style={styles.mini}>Skill</Text>
+                <View style={styles.pills}>
+                  {SKILLS.map((sk) => (
+                    <Pressable
+                      key={sk}
+                      style={[styles.pill, f.skill === sk && styles.pillOn]}
+                      onPress={() => setBySport((p) => ({ ...p, [sport]: { ...f, skill: sk } }))}
+                    >
+                      <Text style={styles.pillText}>{sk}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <Text style={styles.mini}>How much you want to play</Text>
+                <View style={styles.pills}>
+                  {PRIORITY_UI.map((pr) => (
+                    <Pressable
+                      key={pr.value}
+                      style={[styles.pill, f.priority === pr.value && styles.pillOn]}
+                      onPress={() =>
+                        setBySport((p) => ({ ...p, [sport]: { ...f, priority: pr.value } }))
+                      }
+                    >
+                      <Text style={styles.pillText}>{pr.label}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <Text style={styles.mini}>Preferred times</Text>
+                <View style={styles.pills}>
+                  {TIMES.map((t) => (
+                    <Pressable
+                      key={t}
+                      style={[styles.pill, f.times.includes(t) && styles.pillOn]}
+                      onPress={() => toggleTime(sport, t)}
+                    >
+                      <Text style={styles.pillText}>{t}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <Text style={styles.mini}>Home courts (comma separated)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={f.locations}
+                  onChangeText={(txt) => setBySport((p) => ({ ...p, [sport]: { ...f, locations: txt } }))}
+                  placeholder="Club name, public courts…"
+                />
+              </>
+            ) : null}
+          </View>
+        );
+      })}
+
+      <Pressable style={[styles.primaryBtn, busy && styles.off]} onPress={save} disabled={busy}>
+        <Text style={styles.primaryBtnText}>{busy ? 'Saving…' : 'Save profile'}</Text>
+      </Pressable>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.background },
+  inner: { padding: 20, paddingBottom: 48 },
+  h1: { fontSize: 26, fontWeight: '800', color: colors.primary },
+  sub: { color: colors.textSecondary, marginBottom: 20, marginTop: 6 },
+  label: { fontWeight: '600', color: colors.text, marginBottom: 6, marginTop: 12 },
+  input: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+    fontSize: 16,
+    color: colors.text,
+  },
+  tall: { minHeight: 88, textAlignVertical: 'top' },
+  hint: { fontSize: 12, color: colors.textSecondary, marginTop: 6 },
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 14,
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  sportTitle: { fontSize: 18, fontWeight: '700', textTransform: 'capitalize', color: colors.text },
+  toggle: { fontSize: 22, color: colors.primary },
+  mini: { marginTop: 10, marginBottom: 6, color: colors.textSecondary, fontSize: 13 },
+  pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  pill: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  pillOn: { borderColor: colors.primary, backgroundColor: '#E8F5E9' },
+  pillText: { fontSize: 13, color: colors.text, textTransform: 'capitalize' },
+  primaryBtn: {
+    marginTop: 28,
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  primaryBtnText: { color: colors.white, fontWeight: '700', fontSize: 17 },
+  off: { opacity: 0.6 },
+});
