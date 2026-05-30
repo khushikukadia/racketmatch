@@ -91,7 +91,16 @@ With seed + mock auth, you can exercise the full app without signing up.
 
 ### Storage (profile / post images)
 
-The MVP stores **public URLs** in `photo_url` and `image_url`. Upload files to **Supabase Storage** from the client (or dashboard), then paste or persist the public URL in the app. Direct `file://` URIs from the image picker are not uploaded by this MVP.
+The app picks photos from the device library (`expo-image-picker`), uploads them to **Supabase Storage**, and saves the returned **public URL** in `photo_url` / `image_url` via the FastAPI API.
+
+**Production:** keep `EXPO_PUBLIC_DEV_MOCK_AUTH=false` so users sign in with Supabase email/password. Uploads use the user’s Supabase JWT; mock dev login cannot upload (by design).
+
+**One-time Supabase setup:** in the [SQL Editor](https://supabase.com/dashboard), run [`supabase/storage-setup.sql`](supabase/storage-setup.sql). That creates public buckets `avatars` and `post-images` and RLS policies so each user can only write under `{their-user-id}/`.
+
+| Bucket | Path pattern | Used for |
+|--------|----------------|----------|
+| `avatars` | `{userId}/avatar-….jpg` | Profile photo |
+| `post-images` | `{userId}/post-….jpg` | Feed post image |
 
 ## API overview
 

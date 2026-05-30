@@ -15,6 +15,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { FeedPost, Profile, SportPreference } from '../api/types';
+import { PhotoPickerField } from '../components/PhotoPickerField';
 import { colors } from '../theme/colors';
 import type { AppStackParamList } from '../navigation/types';
 
@@ -100,8 +101,13 @@ export function ProfileScreen() {
                 <TextInput style={styles.input} value={bio} onChangeText={setBio} multiline />
                 <Text style={styles.label}>City</Text>
                 <TextInput style={styles.input} value={city} onChangeText={setCity} />
-                <Text style={styles.label}>Photo URL</Text>
-                <TextInput style={styles.input} value={photoUrl} onChangeText={setPhotoUrl} />
+                <Text style={styles.label}>Profile photo</Text>
+                <PhotoPickerField
+                  variant="avatar"
+                  value={photoUrl.trim() || null}
+                  onChange={(url) => setPhotoUrl(url ?? '')}
+                  style={styles.photoPicker}
+                />
                 <Pressable style={styles.primaryBtn} onPress={save}>
                   <Text style={styles.primaryBtnText}>Save</Text>
                 </Pressable>
@@ -267,4 +273,5 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: { color: colors.white, fontWeight: '700' },
   link: { color: colors.primary, marginTop: 12, textAlign: 'center' },
+  photoPicker: { alignSelf: 'stretch', marginTop: 8 },
 });

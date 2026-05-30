@@ -6,6 +6,9 @@ import { getSupabase } from '../lib/supabase';
 type AuthState = {
   session: Session | null;
   apiToken: string | null;
+  userId: string | null;
+  /** True when signed in with Supabase (JWT), so Storage uploads are allowed. */
+  canUseCloudStorage: boolean;
   loading: boolean;
   profileReady: boolean | null;
   refreshProfileGate: () => Promise<void>;
@@ -41,6 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [mockLoggedOut, setMockLoggedOut] = useState(false);
 
   const apiToken = session?.access_token && session.access_token !== 'mock' ? session.access_token : null;
+  const userId = session?.user?.id ?? null;
+  const canUseCloudStorage = Boolean(apiToken && !DEV_MOCK);
 
   const refreshProfileGate = useCallback(async () => {
     const token = DEV_MOCK ? null : session?.access_token ?? null;
@@ -111,13 +116,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       session,
       apiToken: DEV_MOCK ? null : apiToken,
+      userId,
+      canUseCloudStorage,
       loading,
       profileReady,
       refreshProfileGate,
       signOut,
       enterDevMock,
     }),
-    [session, apiToken, loading, profileReady, refreshProfileGate, signOut, enterDevMock]
+    [
+      session,
+      apiToken,
+      userId,
+      canUseCloudStorage,
+      loading,
+      profileReady,
+      refreshProfileGate,
+      signOut,
+      enterDevMock,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

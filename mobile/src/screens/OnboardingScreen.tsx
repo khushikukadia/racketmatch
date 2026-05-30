@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { Priority, SkillLevel, Sport } from '../api/types';
+import { PhotoPickerField } from '../components/PhotoPickerField';
 import { colors } from '../theme/colors';
 
 const SPORTS: Sport[] = ['tennis', 'squash', 'pickleball'];
@@ -120,15 +121,13 @@ export function OnboardingScreen() {
       <Text style={styles.label}>City</Text>
       <TextInput style={styles.input} value={city} onChangeText={setCity} placeholder="e.g. Oakland" />
 
-      <Text style={styles.label}>Profile photo URL (optional)</Text>
-      <TextInput
-        style={styles.input}
-        value={photoUrl}
-        onChangeText={setPhotoUrl}
-        placeholder="https://… (Supabase Storage public URL)"
-        autoCapitalize="none"
+      <Text style={styles.label}>Profile photo (optional)</Text>
+      <PhotoPickerField
+        variant="avatar"
+        value={photoUrl.trim() || null}
+        onChange={(url) => setPhotoUrl(url ?? '')}
+        style={styles.photoPicker}
       />
-      <Text style={styles.hint}>Upload images via Supabase Storage in production; paste the public URL here for MVP.</Text>
 
       {SPORTS.map((sport) => {
         const f = bySport[sport];
@@ -219,7 +218,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   tall: { minHeight: 88, textAlignVertical: 'top' },
-  hint: { fontSize: 12, color: colors.textSecondary, marginTop: 6 },
+  photoPicker: { marginTop: 8, alignSelf: 'stretch' },
   card: {
     backgroundColor: colors.white,
     borderRadius: 16,

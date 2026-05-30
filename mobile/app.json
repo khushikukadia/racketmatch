@@ -25,6 +25,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "RacketMatch needs access to your photos so you can set a profile picture and add images to posts."
+        }
+      ]
+    ]
   }
 }

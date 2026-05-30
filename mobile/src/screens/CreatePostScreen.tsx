@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { PhotoPickerField } from '../components/PhotoPickerField';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
@@ -78,8 +79,13 @@ export function CreatePostScreen({ navigation }: { navigation: Nav }) {
       />
       <Text style={styles.label}>Location</Text>
       <TextInput style={styles.input} value={location} onChangeText={setLocation} />
-      <Text style={styles.label}>Image URL (optional)</Text>
-      <TextInput style={styles.input} value={imageUrl} onChangeText={setImageUrl} autoCapitalize="none" />
+      <Text style={styles.label}>Photo (optional)</Text>
+      <PhotoPickerField
+        variant="post"
+        value={imageUrl.trim() || null}
+        onChange={(url) => setImageUrl(url ?? '')}
+        style={styles.photoPicker}
+      />
       <Text style={styles.label}>Tag match partners</Text>
       {matches.map((m) => (
         <Pressable key={m.match.id} style={styles.tagRow} onPress={() => toggleTag(m.other_user.id)}>
@@ -131,4 +137,5 @@ const styles = StyleSheet.create({
   },
   btnText: { color: colors.white, fontWeight: '700', fontSize: 17 },
   off: { opacity: 0.6 },
+  photoPicker: { marginBottom: 4 },
 });
