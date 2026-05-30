@@ -10,6 +10,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import {
   avatarStoragePath,
@@ -19,6 +20,7 @@ import {
   uploadImageFromUri,
 } from '../lib/imageUpload';
 import { colors } from '../theme/colors';
+import { buttonStyles } from '../theme/buttons';
 
 type Variant = 'avatar' | 'post';
 
@@ -89,19 +91,25 @@ export function PhotoPickerField({ variant, value, onChange, style }: Props) {
         />
       ) : (
         <View style={isAvatar ? styles.avatarPlaceholder : styles.postPlaceholder}>
-          <Text style={styles.placeholderIcon}>{isAvatar ? '👤' : '📷'}</Text>
+          <Feather
+            name={isAvatar ? 'user' : 'image'}
+            size={36}
+            color={colors.textSecondary}
+          />
         </View>
       )}
       <View style={styles.actions}>
         <Pressable
-          style={[styles.btn, busy && styles.btnDisabled]}
+          style={[buttonStyles.primaryCompact, styles.btn, busy && buttonStyles.disabled]}
           onPress={onPick}
           disabled={busy}
         >
           {busy ? (
-            <ActivityIndicator color={colors.white} size="small" />
+            <ActivityIndicator color={colors.primary} size="small" />
           ) : (
-            <Text style={styles.btnText}>{value ? 'Change photo' : 'Choose from library'}</Text>
+            <Text style={buttonStyles.primaryTextCompact}>
+              {value ? 'Change photo' : 'Choose from library'}
+            </Text>
           )}
         </Pressable>
         {value ? (
@@ -153,16 +161,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  placeholderIcon: { fontSize: 36 },
   actions: { alignSelf: 'stretch', gap: 8 },
-  btn: {
-    backgroundColor: colors.primary,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  btnDisabled: { opacity: 0.6 },
-  btnText: { color: colors.white, fontWeight: '600', fontSize: 15 },
+  btn: { alignSelf: 'stretch' },
   removeBtn: { alignItems: 'center', paddingVertical: 6 },
   removeText: { color: colors.textSecondary, fontSize: 14 },
   hint: {

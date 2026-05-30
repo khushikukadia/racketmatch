@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth, isDevMockAuth } from '../../context/AuthContext';
 import { getSupabase } from '../../lib/supabase';
 import { colors } from '../../theme/colors';
+import { buttonStyles } from '../../theme/buttons';
 import type { AuthStackParamList } from '../../navigation/types';
 
 type Nav = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
@@ -63,8 +64,12 @@ export function LoginScreen({ navigation }: { navigation: Nav }) {
         value={password}
         onChangeText={setPassword}
       />
-      <Pressable style={[styles.btn, busy && styles.btnDisabled]} onPress={onLogin} disabled={busy}>
-        <Text style={styles.btnText}>{busy ? 'Signing in…' : 'Log in'}</Text>
+      <Pressable
+        style={[buttonStyles.primary, styles.btn, busy && buttonStyles.disabled]}
+        onPress={onLogin}
+        disabled={busy}
+      >
+        <Text style={buttonStyles.primaryText}>{busy ? 'Signing in…' : 'Log in'}</Text>
       </Pressable>
       <Pressable onPress={() => navigation.navigate('Signup')}>
         <Text style={styles.link}>Create account</Text>
@@ -117,15 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
   },
-  btn: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  btnDisabled: { opacity: 0.6 },
-  btnText: { color: colors.white, fontSize: 17, fontWeight: '600' },
+  btn: { marginTop: 8 },
   link: {
     color: colors.primaryMuted,
     textAlign: 'center',

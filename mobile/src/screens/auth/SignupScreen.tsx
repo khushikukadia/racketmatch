@@ -3,6 +3,7 @@ import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, Tex
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getSupabase } from '../../lib/supabase';
 import { colors } from '../../theme/colors';
+import { buttonStyles } from '../../theme/buttons';
 import type { AuthStackParamList } from '../../navigation/types';
 
 type Nav = NativeStackNavigationProp<AuthStackParamList, 'Signup'>;
@@ -50,8 +51,12 @@ export function SignupScreen({ navigation }: { navigation: Nav }) {
         value={password}
         onChangeText={setPassword}
       />
-      <Pressable style={[styles.btn, busy && styles.off]} onPress={onSignup} disabled={busy}>
-        <Text style={styles.btnText}>{busy ? 'Creating…' : 'Sign up'}</Text>
+      <Pressable
+        style={[buttonStyles.primary, styles.btn, busy && buttonStyles.disabled]}
+        onPress={onSignup}
+        disabled={busy}
+      >
+        <Text style={buttonStyles.primaryText}>{busy ? 'Creating…' : 'Sign up'}</Text>
       </Pressable>
       <Pressable onPress={() => navigation.goBack()}>
         <Text style={styles.link}>Back to login</Text>
@@ -79,14 +84,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
   },
-  btn: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  off: { opacity: 0.6 },
-  btnText: { color: colors.white, fontSize: 17, fontWeight: '600' },
+  btn: { marginTop: 8 },
   link: { color: colors.primaryMuted, textAlign: 'center', marginTop: 12 },
 });

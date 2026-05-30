@@ -36,67 +36,82 @@ export function MatchesScreen() {
     }, [load])
   );
 
-  if (loading && rows.length === 0) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator color={colors.primary} />
-      </View>
-    );
-  }
-
   return (
-    <FlatList
-      data={rows}
-      keyExtractor={(item) => item.match.id}
-      refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
-      contentContainerStyle={styles.list}
-      ListEmptyComponent={
-        <Text style={styles.empty}>No matches yet — keep swiping on Discover.</Text>
-      }
-      renderItem={({ item }) => (
-        <Pressable
-          style={styles.row}
-          onPress={() =>
-            navigation
-              .getParent()
-              ?.navigate('Chat', { matchId: item.match.id, title: item.other_user.name })
+    <View style={styles.root}>
+      <Text style={styles.title}>Matches</Text>
+      {loading && rows.length === 0 ? (
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={rows}
+          keyExtractor={(item) => item.match.id}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
+          contentContainerStyle={rows.length === 0 ? styles.listEmpty : undefined}
+          ListEmptyComponent={
+            <Text style={styles.empty}>No matches yet — keep swiping on Discover.</Text>
           }
-        >
-          <Image
-            source={{
-              uri: item.other_user.photo_url ?? 'https://picsum.photos/seed/m/100/100',
-            }}
-            style={styles.avatar}
-          />
-          <View style={styles.rowBody}>
-            <Text style={styles.name}>{item.other_user.name}</Text>
-            <Text style={styles.preview} numberOfLines={1}>
-              {item.last_message_preview ?? 'Say hi and suggest a game'}
-            </Text>
-          </View>
-        </Pressable>
+          renderItem={({ item }) => (
+            <Pressable
+              style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+              onPress={() =>
+                navigation
+                  .getParent()
+                  ?.navigate('Chat', { matchId: item.match.id, title: item.other_user.name })
+              }
+            >
+              <Image
+                source={{
+                  uri: item.other_user.photo_url ?? 'https://picsum.photos/seed/m/100/100',
+                }}
+                style={styles.avatar}
+              />
+              <View style={styles.rowBody}>
+                <Text style={styles.name}>{item.other_user.name}</Text>
+                <Text style={styles.preview} numberOfLines={1}>
+                  {item.last_message_preview ?? 'Say hi and suggest a game'}
+                </Text>
+              </View>
+            </Pressable>
+          )}
+        />
       )}
-    />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: colors.white },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  list: { padding: 12 },
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: colors.text,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 28,
+  },
+  listEmpty: { flexGrow: 1 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
   },
-  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.border },
-  rowBody: { marginLeft: 12, flex: 1 },
-  name: { fontWeight: '700', fontSize: 16, color: colors.text },
-  preview: { color: colors.textSecondary, marginTop: 4 },
-  empty: { textAlign: 'center', color: colors.textSecondary, marginTop: 40 },
+  rowPressed: { backgroundColor: colors.background },
+  avatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.border },
+  rowBody: { marginLeft: 14, flex: 1 },
+  name: { fontWeight: '700', fontSize: 17, color: colors.text },
+  preview: { color: colors.text, marginTop: 4, fontSize: 15 },
+  empty: {
+    textAlign: 'center',
+    color: colors.textSecondary,
+    marginTop: 48,
+    paddingHorizontal: 32,
+    fontSize: 15,
+    lineHeight: 22,
+  },
 });

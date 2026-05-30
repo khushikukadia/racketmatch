@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DiscoverScreen } from '../screens/DiscoverScreen';
 import { MatchesScreen } from '../screens/MatchesScreen';
 import { FeedScreen } from '../screens/FeedScreen';
@@ -10,11 +11,16 @@ import type { MainTabParamList } from './types';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export function MainTabs() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: colors.white },
-        headerTitleStyle: { color: colors.primary, fontWeight: '700' },
+        headerShown: false,
+        sceneStyle: {
+          paddingTop: insets.top + 12,
+          backgroundColor: colors.background,
+        },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: { backgroundColor: colors.white, borderTopColor: colors.border },
@@ -34,6 +40,10 @@ export function MainTabs() {
         name="Matches"
         component={MatchesScreen}
         options={{
+          sceneStyle: {
+            paddingTop: insets.top + 24,
+            backgroundColor: colors.white,
+          },
           tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles-outline" size={size} color={color} />,
         }}
       />

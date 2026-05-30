@@ -16,6 +16,24 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { Comment, FeedPost } from '../api/types';
 import { colors, sportAccent } from '../theme/colors';
+import { buttonStyles } from '../theme/buttons';
+
+function formatTimeAgo(iso: string): string {
+  const sec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (sec < 60) return 'Just now';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min} ${min === 1 ? 'minute' : 'minutes'} ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr} ${hr === 1 ? 'hour' : 'hours'} ago`;
+  const day = Math.floor(hr / 24);
+  if (day < 7) return `${day} ${day === 1 ? 'day' : 'days'} ago`;
+  const week = Math.floor(day / 7);
+  if (week < 5) return `${week} ${week === 1 ? 'week' : 'weeks'} ago`;
+  const month = Math.floor(day / 30);
+  if (month < 12) return `${month} ${month === 1 ? 'month' : 'months'} ago`;
+  const year = Math.floor(day / 365);
+  return `${year} ${year === 1 ? 'year' : 'years'} ago`;
+}
 
 export function FeedScreen() {
   const { apiToken, session } = useAuth();
@@ -120,20 +138,24 @@ export function FeedScreen() {
     }
   };
 
-  if (loading && posts.length === 0) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator color={colors.primary} />
-      </View>
-    );
-  }
-
   return (
     <View style={styles.root}>
-      <Pressable style={styles.compose} onPress={() => navigation.getParent()?.navigate('CreatePost')}>
-        <Text style={styles.composeText}>＋ Log a session</Text>
-      </Pressable>
-      <FlatList
+      <View style={styles.topBar}>
+        <Pressable
+          style={({ pressed }) => [styles.addBtn, pressed && styles.addBtnPressed]}
+          onPress={() => navigation.getParent()?.navigate('CreatePost')}
+          hitSlop={8}
+          accessibilityLabel="Log a session"
+        >
+          <Feather name="plus" size={34} color={colors.text} />
+        </Pressable>
+      </View>
+      {loading && posts.length === 0 ? (
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
         data={posts}
         keyExtractor={(p) => p.id}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
@@ -158,7 +180,8 @@ export function FeedScreen() {
                 <View style={{ flex: 1 }}>
                   <Text style={styles.author}>{p.author?.name ?? 'Player'}</Text>
                   <Text style={styles.meta}>
-                    {p.sport} · {new Date(p.played_at).toLocaleString()}
+                    {p.sport}
+                    {p.location ? ` · ${p.location}` : ''}
                   </Text>
                 </View>
                 {!isSelf ? (
@@ -171,7 +194,6 @@ export function FeedScreen() {
                 <Image source={{ uri: p.image_url }} style={styles.postImg} />
               ) : null}
               {p.caption ? <Text style={styles.caption}>{p.caption}</Text> : null}
-              {p.location ? <Text style={styles.loc}>📍 {p.location}</Text> : null}
               {p.tagged_users.length > 0 ? (
                 <Text style={styles.tags}>
                   With {p.tagged_users.map((t) => t.name).join(', ')}
@@ -195,61 +217,65 @@ export function FeedScreen() {
                 </Pressable>
               </View>
 
-              {isOpen ? (
-                <View style={styles.commentsBlock}>
-                  {commentsLoading[p.id] && comments.length === 0 ? (
-                    <ActivityIndicator color={colors.primary} style={{ marginVertical: 8 }} />
-                  ) : null}
-                  {comments.length === 0 && !commentsLoading[p.id] ? (
-                    <Text style={styles.noComments}>Be the first to comment.</Text>
-                  ) : null}
-                  {comments.map((c) => (
-                    <View key={c.id} style={styles.commentRow}>
-                      <Image
-                        source={{
-                          uri:
-                            c.author?.photo_url ??
-                            'https://picsum.photos/seed/c/40/40',
-                        }}
-                        style={styles.commentAvatar}
-                      />
-                      <View style={styles.commentBody}>
-                        <Text style={styles.commentAuthor}>
-                          {c.author?.name ?? 'Player'}
-                        </Text>
-                        <Text style={styles.commentText}>{c.body}</Text>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              ) : null}
+              <Text style={styles.timeAgo}>{formatTimeAgo(p.created_at)}</Text>
 
-              <View style={styles.commentInputRow}>
-                <TextInput
-                  style={styles.commentInput}
-                  placeholder="Add a comment…"
-                  placeholderTextColor={colors.textSecondary}
-                  value={commentDrafts[p.id] ?? ''}
-                  onChangeText={(t) =>
-                    setCommentDrafts((d) => ({ ...d, [p.id]: t }))
-                  }
-                  multiline
-                />
-                <Pressable
-                  style={[
-                    styles.commentSend,
-                    !(commentDrafts[p.id] ?? '').trim() && styles.commentSendOff,
-                  ]}
-                  onPress={() => submitComment(p.id)}
-                  disabled={!(commentDrafts[p.id] ?? '').trim()}
-                >
-                  <Feather name="send" size={16} color={colors.white} />
-                </Pressable>
-              </View>
+              {isOpen ? (
+                <>
+                  <View style={styles.commentsBlock}>
+                    {commentsLoading[p.id] && comments.length === 0 ? (
+                      <ActivityIndicator color={colors.primary} style={{ marginVertical: 8 }} />
+                    ) : null}
+                    {comments.length === 0 && !commentsLoading[p.id] ? (
+                      <Text style={styles.noComments}>Be the first to comment.</Text>
+                    ) : null}
+                    {comments.map((c) => (
+                      <View key={c.id} style={styles.commentRow}>
+                        <Image
+                          source={{
+                            uri:
+                              c.author?.photo_url ??
+                              'https://picsum.photos/seed/c/40/40',
+                          }}
+                          style={styles.commentAvatar}
+                        />
+                        <View style={styles.commentBody}>
+                          <Text style={styles.commentAuthor}>
+                            {c.author?.name ?? 'Player'}
+                          </Text>
+                          <Text style={styles.commentText}>{c.body}</Text>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                  <View style={styles.commentInputRow}>
+                    <TextInput
+                      style={styles.commentInput}
+                      placeholder="Add a comment…"
+                      placeholderTextColor={colors.textSecondary}
+                      value={commentDrafts[p.id] ?? ''}
+                      onChangeText={(t) =>
+                        setCommentDrafts((d) => ({ ...d, [p.id]: t }))
+                      }
+                      multiline
+                    />
+                    <Pressable
+                      style={[
+                        buttonStyles.iconCircle,
+                        !(commentDrafts[p.id] ?? '').trim() && styles.commentSendOff,
+                      ]}
+                      onPress={() => submitComment(p.id)}
+                      disabled={!(commentDrafts[p.id] ?? '').trim()}
+                    >
+                      <Feather name="send" size={16} color={colors.primarySoft} />
+                    </Pressable>
+                  </View>
+                </>
+              ) : null}
             </View>
           );
         }}
       />
+      )}
     </View>
   );
 }
@@ -257,14 +283,15 @@ export function FeedScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  compose: {
-    margin: 12,
-    backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 14,
-    alignItems: 'center',
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 10,
   },
-  composeText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+  addBtn: { padding: 8 },
+  addBtnPressed: { opacity: 0.55 },
   list: { paddingHorizontal: 12, paddingBottom: 24 },
   card: {
     backgroundColor: colors.white,
@@ -281,15 +308,14 @@ const styles = StyleSheet.create({
   meta: { color: colors.textSecondary, fontSize: 13, textTransform: 'capitalize' },
   followPill: {
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primarySoft,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
   },
-  followText: { color: colors.primary, fontWeight: '600', fontSize: 13 },
+  followText: { color: colors.primarySoft, fontWeight: '600', fontSize: 13 },
   postImg: { width: '100%', height: 200, backgroundColor: colors.border },
   caption: { paddingHorizontal: 12, paddingTop: 8, fontSize: 16, color: colors.text },
-  loc: { paddingHorizontal: 12, color: colors.textSecondary, marginTop: 4 },
   tags: { paddingHorizontal: 12, color: colors.primaryMuted, marginTop: 4, fontSize: 14 },
   actions: {
     flexDirection: 'row',
@@ -301,6 +327,12 @@ const styles = StyleSheet.create({
   actionText: { fontSize: 14, color: colors.textSecondary, fontWeight: '600' },
   actionTextActive: { color: colors.danger },
   heartFilled: { textShadowColor: colors.danger },
+  timeAgo: {
+    paddingHorizontal: 12,
+    paddingBottom: 4,
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
   commentsBlock: {
     paddingHorizontal: 12,
     paddingTop: 4,
@@ -338,14 +370,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     minHeight: 36,
     maxHeight: 120,
-  },
-  commentSend: {
-    backgroundColor: colors.primary,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   commentSendOff: { opacity: 0.4 },
   empty: { textAlign: 'center', color: colors.textSecondary, marginTop: 40 },

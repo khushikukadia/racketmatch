@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { Message, Sport } from '../api/types';
 import { colors } from '../theme/colors';
+import { buttonStyles } from '../theme/buttons';
 import type { AppStackParamList } from '../navigation/types';
 
 type Props = {
@@ -133,11 +134,11 @@ export function ChatScreen({ navigation, route }: Props) {
           textAlignVertical="top"
         />
         <Pressable
-          style={[styles.send, !text.trim() && styles.sendOff]}
+          style={[buttonStyles.primaryCompact, styles.send, !text.trim() && styles.sendOff]}
           onPress={send}
           disabled={!text.trim()}
         >
-          <Text style={styles.sendText}>Send</Text>
+          <Text style={buttonStyles.primaryTextSmall}>Send</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -151,14 +152,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginTop: 8,
     marginBottom: 4,
-    backgroundColor: '#E8F5E9',
+    backgroundColor: colors.white,
     paddingVertical: 10,
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.primaryMuted,
+    borderColor: colors.primarySoft,
   },
-  suggestText: { color: colors.primary, fontWeight: '700' },
+  suggestText: { color: colors.primarySoft, fontWeight: '700' },
   list: { padding: 12, paddingBottom: 16 },
   bubbleWrap: { marginBottom: 8, flexDirection: 'row' },
   mineWrap: { justifyContent: 'flex-end' },
@@ -191,13 +192,9 @@ const styles = StyleSheet.create({
     maxHeight: 140,
   },
   send: {
-    backgroundColor: colors.primary,
     paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 20,
     minHeight: 40,
     justifyContent: 'center',
   },
   sendOff: { opacity: 0.4 },
-  sendText: { color: colors.white, fontWeight: '700' },
 });

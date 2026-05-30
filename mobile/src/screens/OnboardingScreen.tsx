@@ -13,6 +13,7 @@ import { api } from '../api/client';
 import type { Priority, SkillLevel, Sport } from '../api/types';
 import { PhotoPickerField } from '../components/PhotoPickerField';
 import { colors } from '../theme/colors';
+import { buttonStyles } from '../theme/buttons';
 
 const SPORTS: Sport[] = ['tennis', 'squash', 'pickleball'];
 const SKILLS: SkillLevel[] = ['beginner', 'intermediate', 'advanced'];
@@ -195,8 +196,12 @@ export function OnboardingScreen() {
         );
       })}
 
-      <Pressable style={[styles.primaryBtn, busy && styles.off]} onPress={save} disabled={busy}>
-        <Text style={styles.primaryBtnText}>{busy ? 'Saving…' : 'Save profile'}</Text>
+      <Pressable
+        style={[buttonStyles.primary, styles.primaryBtn, busy && buttonStyles.disabled]}
+        onPress={save}
+        disabled={busy}
+      >
+        <Text style={buttonStyles.primaryText}>{busy ? 'Saving…' : 'Save profile'}</Text>
       </Pressable>
     </ScrollView>
   );
@@ -242,13 +247,6 @@ const styles = StyleSheet.create({
   },
   pillOn: { borderColor: colors.primary, backgroundColor: '#E8F5E9' },
   pillText: { fontSize: 13, color: colors.text, textTransform: 'capitalize' },
-  primaryBtn: {
-    marginTop: 28,
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-  },
-  primaryBtnText: { color: colors.white, fontWeight: '700', fontSize: 17 },
+  primaryBtn: { marginTop: 28 },
   off: { opacity: 0.6 },
 });

@@ -49,19 +49,21 @@ function AuthNavigator() {
 
 function AppNavigator() {
   return (
-    <AppStack.Navigator>
-      <AppStack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+    <AppStack.Navigator
+      screenOptions={{
+        headerBackTitleVisible: false,
+        headerBackButtonDisplayMode: 'minimal',
+        headerTintColor: colors.primary,
+      }}
+    >
       <AppStack.Screen
-        name="Chat"
-        component={ChatScreen}
-        options={{ title: 'Chat', headerBackTitle: 'Matches' }}
+        name="Main"
+        component={MainTabs}
+        options={{ headerShown: false, headerBackTitle: '' }}
       />
+      <AppStack.Screen name="Chat" component={ChatScreen} options={{ title: 'Chat' }} />
       <AppStack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: 'Log session' }} />
-      <AppStack.Screen
-        name="FollowList"
-        component={FollowListScreen}
-        options={{ title: 'Followers', headerBackTitle: 'Profile' }}
-      />
+      <AppStack.Screen name="FollowList" component={FollowListScreen} options={{ title: 'Followers' }} />
     </AppStack.Navigator>
   );
 }

@@ -13,6 +13,7 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { MatchWithPreview, Sport } from '../api/types';
 import { colors } from '../theme/colors';
+import { buttonStyles } from '../theme/buttons';
 import type { AppStackParamList } from '../navigation/types';
 
 const SPORTS: Sport[] = ['tennis', 'squash', 'pickleball'];
@@ -94,8 +95,12 @@ export function CreatePostScreen({ navigation }: { navigation: Nav }) {
           </Text>
         </Pressable>
       ))}
-      <Pressable style={[styles.btn, busy && styles.off]} onPress={submit} disabled={busy}>
-        <Text style={styles.btnText}>{busy ? 'Posting…' : 'Post to feed'}</Text>
+      <Pressable
+        style={[buttonStyles.primary, styles.btn, busy && buttonStyles.disabled]}
+        onPress={submit}
+        disabled={busy}
+      >
+        <Text style={buttonStyles.primaryText}>{busy ? 'Posting…' : 'Post'}</Text>
       </Pressable>
     </ScrollView>
   );
@@ -128,14 +133,6 @@ const styles = StyleSheet.create({
   tall: { minHeight: 100, textAlignVertical: 'top' },
   tagRow: { paddingVertical: 10, borderBottomWidth: 1, borderColor: colors.border },
   tagText: { fontSize: 16, color: colors.text },
-  btn: {
-    marginTop: 24,
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-  },
-  btnText: { color: colors.white, fontWeight: '700', fontSize: 17 },
-  off: { opacity: 0.6 },
+  btn: { marginTop: 24 },
   photoPicker: { marginBottom: 4 },
 });

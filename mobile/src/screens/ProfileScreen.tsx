@@ -17,6 +17,7 @@ import { api } from '../api/client';
 import type { FeedPost, Profile, SportPreference } from '../api/types';
 import { PhotoPickerField } from '../components/PhotoPickerField';
 import { colors } from '../theme/colors';
+import { buttonStyles } from '../theme/buttons';
 import type { AppStackParamList } from '../navigation/types';
 
 export function ProfileScreen() {
@@ -108,8 +109,8 @@ export function ProfileScreen() {
                   onChange={(url) => setPhotoUrl(url ?? '')}
                   style={styles.photoPicker}
                 />
-                <Pressable style={styles.primaryBtn} onPress={save}>
-                  <Text style={styles.primaryBtnText}>Save</Text>
+                <Pressable style={[buttonStyles.primary, styles.primaryBtn]} onPress={save}>
+                  <Text style={buttonStyles.primaryText}>Save</Text>
                 </Pressable>
                 <Pressable onPress={() => setEditing(false)}>
                   <Text style={styles.link}>Cancel</Text>
@@ -215,13 +216,14 @@ const styles = StyleSheet.create({
   statLabel: { color: colors.textSecondary, fontSize: 13, marginTop: 2 },
   secondaryBtn: {
     marginTop: 16,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primarySoft,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
   },
-  secondaryBtnText: { color: colors.primary, fontWeight: '600' },
+  secondaryBtnText: { color: colors.primarySoft, fontWeight: '600' },
   section: {
     fontSize: 18,
     fontWeight: '700',
@@ -263,15 +265,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     color: colors.text,
   },
-  primaryBtn: {
-    alignSelf: 'stretch',
-    backgroundColor: colors.primary,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  primaryBtnText: { color: colors.white, fontWeight: '700' },
+  primaryBtn: { alignSelf: 'stretch', marginTop: 16 },
   link: { color: colors.primary, marginTop: 12, textAlign: 'center' },
   photoPicker: { alignSelf: 'stretch', marginTop: 8 },
 });
