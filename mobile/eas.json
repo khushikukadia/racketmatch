@@ -6,9 +6,9 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://YOUR_BACKEND_URL_HERE",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://YOUR_SUPABASE_PROJECT_REF_HERE.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "YOUR_SUPABASE_ANON_KEY_HERE",
+        "EXPO_PUBLIC_API_URL": "https://racketmatch-s1gc.onrender.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ehlqqotcdwxofbijuxrx.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVobnFxb3RjZHd4b2ZiaWp1eHJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg3NzU4MzMsImV4cCI6MjA2NDM1MTgzM30.Dv6k2V15qZM22RZLm_vNq9F5D9Hd518JY6Vz5wqSsQ",
         "EXPO_PUBLIC_DEV_MOCK_AUTH": "false"
       },
       "android": {

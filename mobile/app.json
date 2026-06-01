@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourorg.racketmatch"
+      "bundleIdentifier": "com.khushikukadia.racketmatch"
     },
     "android": {
       "package": "com.yourorg.racketmatch",
