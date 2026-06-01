@@ -9,21 +9,31 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import type { DiscoverProfile } from '../api/types';
+import type { DiscoverProfile, Sport } from '../api/types';
 import { colors, sportAccent } from '../theme/colors';
 
 type Props = {
   profile: DiscoverProfile;
+  mySports: Sport[];
   onSwipe: (direction: 'like' | 'pass') => void;
   disabled?: boolean;
 };
 
-export function SwipeCard({ profile, onSwipe, disabled }: Props) {
+export function SwipeCard({ profile, mySports, onSwipe, disabled }: Props) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const swoosh = useSharedValue(0);
 
-  const primarySport = profile.sports[0]?.sport ?? 'tennis';
+  const sharedSports = useMemo(
+    () => new Set(mySports.filter((s) => profile.sports.some((p) => p.sport === s))),
+    [mySports, profile.sports]
+  );
+  const otherReasons = useMemo(
+    () => profile.match_reasons.filter((r) => !r.startsWith('both play ')),
+    [profile.match_reasons]
+  );
+  const primarySport =
+    [...sharedSports][0] ?? profile.sports[0]?.sport ?? 'tennis';
   const accent = useMemo(() => sportAccent(primarySport), [primarySport]);
 
   const pan = Gesture.Pan()
@@ -89,30 +99,28 @@ export function SwipeCard({ profile, onSwipe, disabled }: Props) {
           style={[styles.swoosh, { backgroundColor: accent.primary }, swooshStyle]}
         />
         <View style={styles.body}>
-          <View style={styles.nameRow}>
-            <Text style={styles.name} numberOfLines={1}>
-              {profile.name}
-            </Text>
-            <View style={[styles.scoreBadge, { backgroundColor: accent.primary }]}>
-              <Text style={styles.scoreText}>{profile.compatibility_score}%</Text>
-            </View>
-          </View>
+          <Text style={styles.name} numberOfLines={1}>
+            {profile.name}
+          </Text>
           {profile.city ? <Text style={styles.meta}>{profile.city}</Text> : null}
-          {profile.match_reasons.length > 0 ? (
+          {sharedSports.size > 0 ? (
+            <View style={styles.sportRow}>
+              {[...sharedSports].map((sport) => (
+                <View key={sport} style={[styles.chip, styles.chipShared]}>
+                  <Text style={[styles.chipText, styles.chipTextShared]}>Both play {sport}</Text>
+                </View>
+              ))}
+            </View>
+          ) : otherReasons.length > 0 ? (
             <Text style={styles.reasons} numberOfLines={2}>
-              {profile.match_reasons.join(' · ')}
+              {otherReasons.join(' · ')}
             </Text>
           ) : null}
           <View style={styles.sportRow}>
             {profile.sports.map((s) => (
-              <View
-                key={s.id}
-                style={[styles.chip, { borderColor: sportAccent(s.sport).primary }]}
-              >
-                <Text style={styles.chipText}>
-                  {s.sport} · {s.skill_level}
-                </Text>
-              </View>
+              <Text key={s.id} style={styles.sportPlain}>
+                {s.sport} · {s.skill_level}
+              </Text>
             ))}
           </View>
           {times ? (
@@ -185,26 +193,10 @@ const styles = StyleSheet.create({
     padding: 18,
     gap: 6,
   },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
   name: {
-    flex: 1,
     fontSize: 26,
     fontWeight: '800',
     color: colors.white,
-  },
-  scoreBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  scoreText: {
-    color: colors.white,
-    fontWeight: '800',
-    fontSize: 14,
   },
   meta: {
     color: 'rgba(255,255,255,0.85)',
@@ -218,20 +210,31 @@ const styles = StyleSheet.create({
   sportRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 12,
     marginTop: 4,
   },
+  sportPlain: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.92)',
+    textTransform: 'capitalize',
+  },
   chip: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    backgroundColor: 'rgba(255,255,255,0.92)',
+  },
+  chipShared: {
+    borderColor: colors.primarySoft,
+    backgroundColor: 'rgba(232, 245, 233, 0.95)',
   },
   chipText: {
     fontSize: 12,
-    color: colors.text,
     textTransform: 'capitalize',
+    fontWeight: '700',
+  },
+  chipTextShared: {
+    color: colors.primary,
   },
   small: {
     fontSize: 12,

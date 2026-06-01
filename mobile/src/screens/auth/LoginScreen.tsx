@@ -14,6 +14,7 @@ import { useAuth, isDevMockAuth } from '../../context/AuthContext';
 import { getSupabase } from '../../lib/supabase';
 import { colors } from '../../theme/colors';
 import { buttonStyles } from '../../theme/buttons';
+import { AppBrand } from '../../components/AppBrand';
 import type { AuthStackParamList } from '../../navigation/types';
 
 type Nav = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
@@ -44,7 +45,7 @@ export function LoginScreen({ navigation }: { navigation: Nav }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.header}>
-        <Text style={styles.logo}>RacketMatch</Text>
+        <AppBrand size="md" style={styles.brand} />
         <Text style={styles.tag}>Find your next hit.</Text>
       </View>
       <TextInput
@@ -101,16 +102,14 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 24,
+    alignItems: 'center',
   },
-  logo: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: colors.primary,
-  },
+  brand: { marginBottom: 4 },
   tag: {
     fontSize: 16,
     color: colors.textSecondary,
     marginTop: 4,
+    textAlign: 'center',
   },
   input: {
     backgroundColor: colors.white,

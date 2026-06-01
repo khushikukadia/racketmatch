@@ -16,8 +16,15 @@ import type {
   SportPreference,
 } from './types';
 
-const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? 'http://127.0.0.1:8000').replace(/\/$/, '');
+const apiUrlFromEnv = (process.env.EXPO_PUBLIC_API_URL ?? '').replace(/\/$/, '');
+const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : false;
+const API_URL = apiUrlFromEnv || (isDev ? 'http://127.0.0.1:8000' : '');
 const DEV_MOCK = process.env.EXPO_PUBLIC_DEV_MOCK_AUTH === 'true';
+
+if (!API_URL) {
+  // Fail fast in production-style builds so real testers don't accidentally hit localhost.
+  throw new Error('Missing EXPO_PUBLIC_API_URL. Set it in EAS env or mobile/.env for device builds.');
+}
 
 export class ApiError extends Error {
   constructor(

@@ -1,8 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { AppBrand } from '../components/AppBrand';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignupScreen } from '../screens/auth/SignupScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
@@ -83,7 +84,7 @@ function OnboardingNavigator() {
 function NavFallback() {
   return (
     <View style={styles.boot}>
-      <ActivityIndicator size="large" color={colors.primary} />
+      <AppBrand size="md" />
     </View>
   );
 }
@@ -94,7 +95,7 @@ export function RootNavigator() {
   if (loading) {
     return (
       <View style={styles.boot}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <AppBrand size="md" />
       </View>
     );
   }

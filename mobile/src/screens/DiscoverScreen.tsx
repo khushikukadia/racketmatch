@@ -1,21 +1,34 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { api, ApiError } from '../api/client';
-import type { DiscoverProfile } from '../api/types';
+import type { DiscoverProfile, Sport } from '../api/types';
+import { AppBrand } from '../components/AppBrand';
 import { colors } from '../theme/colors';
+
+function MatchSplashTitle() {
+  return (
+    <View style={styles.matchTextWrap}>
+      <Text style={styles.matchTitle}>It's a</Text>
+      <Text style={styles.matchTitle}>match!</Text>
+    </View>
+  );
+}
 
 type SwipeCardProps = {
   profile: DiscoverProfile;
+  mySports: Sport[];
   onSwipe: (direction: 'like' | 'pass') => void;
   disabled?: boolean;
 };
 
 export function DiscoverScreen() {
-  const { apiToken } = useAuth();
+  const { apiToken, userId } = useAuth();
   const [queue, setQueue] = useState<DiscoverProfile[]>([]);
+  const [mySports, setMySports] = useState<Sport[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [matchSplash, setMatchSplash] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [SwipeCard, setSwipeCard] = useState<React.ComponentType<SwipeCardProps> | null>(null);
 
@@ -36,14 +49,20 @@ export function DiscoverScreen() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const rows = await api.getDiscover(apiToken);
+      const [rows, sports] = await Promise.all([
+        api.getDiscover(apiToken),
+        userId
+          ? api.getUserSports(apiToken, userId).then((s) => s.map((p) => p.sport))
+          : Promise.resolve([] as Sport[]),
+      ]);
       setQueue(rows);
+      setMySports(sports);
     } catch (e) {
       console.warn(e);
     } finally {
       setLoading(false);
     }
-  }, [apiToken]);
+  }, [apiToken, userId]);
 
   useEffect(() => {
     load();
@@ -57,8 +76,8 @@ export function DiscoverScreen() {
     try {
       const res = await api.postSwipe(apiToken, top.id, direction);
       if (res.matched) {
-        setToast("It's a match!");
-        setTimeout(() => setToast(null), 2000);
+        setMatchSplash(true);
+        setTimeout(() => setMatchSplash(false), 2000);
       }
       setQueue((q) => {
         const next = q.slice(1);
@@ -80,7 +99,7 @@ export function DiscoverScreen() {
   if (loading && !top) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <AppBrand size="sm" showName={false} />
       </View>
     );
   }
@@ -88,6 +107,7 @@ export function DiscoverScreen() {
   if (!top) {
     return (
       <View style={styles.center}>
+        <AppBrand size="sm" showName={false} style={styles.emptyLogo} />
         <Text style={styles.emptyTitle}>You're all caught up</Text>
         <Text style={styles.emptySub}>Check back later for new players nearby.</Text>
         <Pressable style={styles.reload} onPress={load}>
@@ -100,20 +120,25 @@ export function DiscoverScreen() {
   if (!SwipeCard) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <AppBrand size="sm" showName={false} />
       </View>
     );
   }
 
   return (
     <View style={styles.root}>
+      {matchSplash ? (
+        <View style={styles.matchOverlay}>
+          <MatchSplashTitle />
+        </View>
+      ) : null}
       {toast ? (
         <View style={styles.toast}>
           <Text style={styles.toastText}>{toast}</Text>
         </View>
       ) : null}
       <View style={styles.cardSlot}>
-        <SwipeCard key={top.id} profile={top} onSwipe={onSwipe} disabled={busy} />
+        <SwipeCard key={top.id} profile={top} mySports={mySports} onSwipe={onSwipe} disabled={busy} />
       </View>
       <View style={styles.actions}>
         <Pressable style={[styles.circle, styles.pass]} onPress={() => onSwipe('pass')} disabled={busy}>
@@ -150,6 +175,7 @@ const styles = StyleSheet.create({
   like: { borderColor: colors.primarySoft, backgroundColor: colors.white },
   circleText: { fontWeight: '700', color: colors.textSecondary },
   likeText: { color: colors.primarySoft },
+  emptyLogo: { marginBottom: 16 },
   emptyTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
   emptySub: { textAlign: 'center', color: colors.textSecondary, marginTop: 8 },
   reload: {
@@ -162,6 +188,24 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   reloadText: { color: colors.primarySoft, fontWeight: '600' },
+  matchOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 20,
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  matchTextWrap: {
+    alignItems: 'center',
+  },
+  matchTitle: {
+    fontSize: 44,
+    fontWeight: '800',
+    color: colors.primary,
+    textAlign: 'center',
+    lineHeight: 52,
+  },
   toast: {
     position: 'absolute',
     top: 12,

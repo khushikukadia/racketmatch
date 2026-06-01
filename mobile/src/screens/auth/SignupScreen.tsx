@@ -4,6 +4,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getSupabase } from '../../lib/supabase';
 import { colors } from '../../theme/colors';
 import { buttonStyles } from '../../theme/buttons';
+import { AppBrand } from '../../components/AppBrand';
 import type { AuthStackParamList } from '../../navigation/types';
 
 type Nav = NativeStackNavigationProp<AuthStackParamList, 'Signup'>;
@@ -33,7 +34,8 @@ export function SignupScreen({ navigation }: { navigation: Nav }) {
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <Text style={styles.title}>Join RacketMatch</Text>
+      <AppBrand size="sm" style={styles.brand} />
+      <Text style={styles.title}>Create your account</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -73,7 +75,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 12,
   },
-  title: { fontSize: 24, fontWeight: '700', color: colors.primary, marginBottom: 12 },
+  brand: { alignSelf: 'center', marginBottom: 8 },
+  title: { fontSize: 24, fontWeight: '700', color: colors.primary, marginBottom: 12, textAlign: 'center' },
   input: {
     backgroundColor: colors.white,
     borderRadius: 12,

@@ -17,6 +17,16 @@ export const colors = {
   accentPickleOrange: '#FF6D00',
 };
 
+export const skillLevelColors: Record<string, string> = {
+  beginner: '#81C784',
+  intermediate: '#43A047',
+  advanced: '#1B5E20',
+};
+
+export function skillLevelColor(level: string): string {
+  return skillLevelColors[level] ?? colors.textSecondary;
+}
+
 export function sportAccent(sport: string): { primary: string; secondary: string } {
   switch (sport) {
     case 'tennis':

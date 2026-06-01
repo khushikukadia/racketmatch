@@ -1,0 +1,20 @@
+{
+  "cli": {
+    "version": ">= 16.0.0"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://YOUR_BACKEND_URL_HERE",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://YOUR_SUPABASE_PROJECT_REF_HERE.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "YOUR_SUPABASE_ANON_KEY_HERE",
+        "EXPO_PUBLIC_DEV_MOCK_AUTH": "false"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
+

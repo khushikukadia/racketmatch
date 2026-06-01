@@ -1,7 +1,8 @@
 import 'react-native-gesture-handler';
 import { registerRootComponent } from 'expo';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AppSplash } from './src/components/AppSplash';
 
 /**
  * Register a tiny root first so `main` is always registered. The real `App` is
@@ -20,7 +21,7 @@ function Bootstrap() {
       .catch((e: unknown) => {
         const msg = e instanceof Error ? e.message : String(e);
         const stack = e instanceof Error ? e.stack : '';
-        console.error('[RacketMatch] Failed to load App:', msg, stack);
+        console.error('[Smash or Pass] Failed to load App:', msg, stack);
         setLoadError(`${msg}\n\n${stack ?? ''}`);
       });
   }, []);
@@ -40,12 +41,7 @@ function Bootstrap() {
   }
 
   if (!AppComponent) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#0D4F2C" />
-        <Text style={styles.loading}>Starting RacketMatch...</Text>
-      </View>
-    );
+    return <AppSplash />;
   }
 
   return <AppComponent />;
@@ -55,7 +51,6 @@ registerRootComponent(Bootstrap);
 
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: '#FAFAFA' },
-  loading: { marginTop: 16, color: '#5C6670' },
   errTitle: { fontSize: 18, fontWeight: '700', color: '#C62828', marginBottom: 12, textAlign: 'center' },
   scroll: { maxHeight: '70%', width: '100%' },
   errBody: { fontFamily: 'Courier', fontSize: 12, color: '#1A1A1A' },

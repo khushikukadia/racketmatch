@@ -77,6 +77,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .then(({ data }) => {
         setSession(data.session ?? null);
         setLoading(false);
+      })
+      .catch((e) => {
+        console.warn('Failed to load Supabase session', e);
+        setSession(null);
+        setLoading(false);
       });
 
     const { data: sub } = getSupabase().auth.onAuthStateChange((_event, sess) => {

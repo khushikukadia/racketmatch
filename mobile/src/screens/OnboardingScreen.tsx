@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { Priority, SkillLevel, Sport } from '../api/types';
 import { PhotoPickerField } from '../components/PhotoPickerField';
+import { AppBrand } from '../components/AppBrand';
 import { colors } from '../theme/colors';
 import { buttonStyles } from '../theme/buttons';
 
@@ -104,6 +105,7 @@ export function OnboardingScreen() {
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.inner}>
+      <AppBrand size="sm" showName={false} style={styles.brand} />
       <Text style={styles.h1}>Build your player card</Text>
       <Text style={styles.sub}>Squash, tennis, pickleball — show how you like to play.</Text>
 
@@ -210,6 +212,7 @@ export function OnboardingScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
   inner: { padding: 20, paddingBottom: 48 },
+  brand: { alignSelf: 'center', marginBottom: 8 },
   h1: { fontSize: 26, fontWeight: '800', color: colors.primary },
   sub: { color: colors.textSecondary, marginBottom: 20, marginTop: 6 },
   label: { fontWeight: '600', color: colors.text, marginBottom: 6, marginTop: 12 },
