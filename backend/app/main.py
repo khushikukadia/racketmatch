@@ -8,7 +8,7 @@ from app.routes.profiles import router as profiles_router
 from app.routes.proposals import router as proposals_router
 from app.routes.swipes import router as swipes_router
 
-app = FastAPI(title="RacketMatch API", version="0.1.0")
+app = FastAPI(title="SmashOrPass API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,

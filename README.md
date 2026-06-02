@@ -1,6 +1,6 @@
-# RacketMatch
+# SmashOrPass
 
-**RacketMatch** is a mobile MVP for discovering racket-sport partners (squash, tennis, pickleball), mutual matching, chat, session proposals, and a Strava-style activity feed. The stack is **Expo (React Native + TypeScript)**, **FastAPI**, **PostgreSQL** (compatible with **Supabase**), **Supabase Auth**, and **Supabase Storage** URLs for images.
+**SmashOrPass** is a mobile MVP for discovering racket-sport partners (squash, tennis, pickleball), mutual matching, chat, session proposals, and a Strava-style activity feed. The stack is **Expo (React Native + TypeScript)**, **FastAPI**, **PostgreSQL** (compatible with **Supabase**), **Supabase Auth**, and **Supabase Storage** URLs for images.
 
 ## Repository layout
 

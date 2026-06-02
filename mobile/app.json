@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "RacketMatch",
+    "name": "SmashOrPass",
     "slug": "smash-or-pass",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -29,8 +29,8 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro",
-      "name": "RacketMatch",
-      "shortName": "RacketMatch",
+      "name": "SmashOrPass",
+      "shortName": "SmashOrPass",
       "description": "Find racket-sport partners — squash, tennis, pickleball.",
       "themeColor": "#2E7D32",
       "backgroundColor": "#FAFAFA"
@@ -39,7 +39,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "RacketMatch needs access to your photos so you can set a profile picture and add images to posts."
+          "photosPermission": "SmashOrPass needs access to your photos so you can set a profile picture and add images to posts."
         }
       ]
     ]

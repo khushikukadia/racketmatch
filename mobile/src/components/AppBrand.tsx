@@ -26,7 +26,7 @@ export function AppBrand({ size = 'md', showName = true, style }: Props) {
       />
       {showName ? (
         <Text style={[styles.name, { fontSize: nameSize, lineHeight: nameSize + 4, marginTop: -2 }]}>
-          RacketMatch
+          SmashOrPass
         </Text>
       ) : null}
     </View>
