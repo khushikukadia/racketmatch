@@ -43,7 +43,6 @@ export function ConfirmEmailScreen({ navigation, route }: { navigation: Nav; rou
   return (
     <View style={styles.root}>
       <AppBrand size="sm" style={styles.brand} />
-      <Text style={styles.emoji}>📬</Text>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
       {email ? <Text style={styles.email}>{email}</Text> : null}
@@ -72,7 +71,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   brand: { marginBottom: 8 },
-  emoji: { fontSize: 48 },
   title: { fontSize: 24, fontWeight: '700', color: colors.primary, textAlign: 'center' },
   body: {
     fontSize: 16,

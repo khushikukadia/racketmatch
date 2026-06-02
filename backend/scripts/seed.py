@@ -6,7 +6,7 @@ Run from backend/:
 
 What it does:
 - Creates 8 mock users with deterministic UUIDs (11111111-1111-1111-1111-00000000000N).
-- Wipes prior data tied to those mock users only — your real Supabase profile
+- Wipes prior data tied to those mock users only. Your real Supabase profile
   and its data are left untouched.
 - If a real user profile already exists in the DB (i.e. you ran the app and
   saved your onboarding profile), some of the mock users will:
@@ -141,13 +141,9 @@ def clear_seed(session: Session) -> None:
 
 
 def find_real_user(session: Session) -> UserProfile | None:
-    pinned = os.environ.get("DEMO_REAL_USER_ID")
+    pinned = os.getenv("DEMO_REAL_USER_ID")
     if pinned:
-        try:
-            return session.get(UserProfile, uuid.UUID(pinned))
-        except ValueError:
-            print(f"[seed] DEMO_REAL_USER_ID is not a valid UUID: {pinned}")
-            return None
+        return session.get(UserProfile, uuid.UUID(pinned))
     candidates = list(
         session.scalars(
             select(UserProfile)
@@ -309,7 +305,7 @@ def main() -> None:
             po = Post(
                 user_id=p.id,
                 sport=SPORTS_CYCLE[idx % 3],
-                caption=f"Solid session today — {SPORTS_CYCLE[idx % 3].value} with friends.",
+                caption=f"Solid session today: {SPORTS_CYCLE[idx % 3].value} with friends.",
                 location=p.city,
                 image_url=f"https://picsum.photos/seed/post{idx}/600/400",
                 played_at=now - timedelta(days=idx),
@@ -377,7 +373,7 @@ def main() -> None:
                 Message(
                     match_id=match_with_real.id,
                     sender_id=already.id,
-                    body="I usually play at 9am Saturdays — that work?",
+                    body="I usually play at 9am Saturdays. Does that work?",
                 )
             )
 
@@ -385,7 +381,7 @@ def main() -> None:
                 po = Post(
                     user_id=tagger.id,
                     sport=Sport.tennis,
-                    caption=f"Great session with @{real.name.split()[0]} 🎾",
+                    caption=f"Great session with @{real.name.split()[0]}",
                     location=tagger.city,
                     image_url=f"https://picsum.photos/seed/withreal{tagger.id}/600/400",
                     played_at=now - timedelta(hours=6),

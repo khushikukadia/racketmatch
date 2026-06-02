@@ -41,7 +41,7 @@ const navTheme = {
 
 /**
  * On web the JS stack normally lets `document.body` scroll for tall screens, but
- * Expo Web locks the body's height/overflow — so a screen taller than the viewport
+ * Expo Web locks the body's height/overflow, so a screen taller than the viewport
  * gets clipped instead of scrolling. Forcing a bounded card height makes the inner
  * ScrollViews scroll. No-op on native (native-stack handles this already).
  */

@@ -89,7 +89,7 @@ export function CreatePostScreen({ navigation }: { navigation: Nav }) {
       />
       <Text style={styles.label}>Tag match partners</Text>
       {matches.length === 0 ? (
-        <Text style={styles.tagEmpty}>No matches yet — match with players to tag them here.</Text>
+        <Text style={styles.tagEmpty}>No matches yet. Match with players to tag them here.</Text>
       ) : (
         matches.map((m) => (
           <Pressable key={m.match.id} style={styles.tagRow} onPress={() => toggleTag(m.other_user.id)}>

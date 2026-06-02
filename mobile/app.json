@@ -31,7 +31,7 @@
       "bundler": "metro",
       "name": "SmashOrPass",
       "shortName": "SmashOrPass",
-      "description": "Find racket-sport partners — squash, tennis, pickleball.",
+      "description": "Find racket-sport partners: squash, tennis, pickleball.",
       "themeColor": "#2E7D32",
       "backgroundColor": "#FAFAFA"
     },

@@ -4,8 +4,8 @@
 
 ## Repository layout
 
-- `mobile/` — Expo app for **iOS, Android, and web** (tabs: Discover, Matches, Feed, Profile). Same codebase; web builds to static files in `mobile/dist/`.
-- `backend/` — FastAPI API, SQLAlchemy 2.x models, Alembic migrations, seed script.
+- `mobile/` - Expo app for **iOS, Android, and web** (tabs: Discover, Matches, Feed, Profile). Same codebase; web builds to static files in `mobile/dist/`.
+- `backend/` - FastAPI API, SQLAlchemy 2.x models, Alembic migrations, seed script.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ If you see **`FATAL: role "postgres" does not exist`** while connecting to **`lo
 
 If **`could not translate host name "db....supabase.co"`** (DNS failure): Supabase’s **direct** host `db.<ref>.supabase.co` often has **IPv6-only** DNS records. Many home/office networks don’t route IPv6, so Python/psycopg2 cannot resolve or reach it. **Fix:** In Supabase go to **Project Settings → Database → Connection pooling** and copy the **Session pooler** URI (host looks like `aws-0-<region>.pooler.supabase.com`, user looks like `postgres.<project-ref>`). Paste that as `DATABASE_URL`. Optionally append `?sslmode=require` if the client requires it.
 
-Optional seed data (prints demo user UUIDs — use one for mock mobile auth):
+Optional seed data (prints demo user UUIDs; use one for mock mobile auth):
 
 ```bash
 python scripts/seed.py
@@ -92,9 +92,9 @@ npx serve dist   # optional: preview locally
 
 Set `EXPO_PUBLIC_*` env vars before `build:web` (Vercel/Netlify project env or a `.env` file). The API must allow your web origin in `CORS_ORIGINS`.
 
-**Deploy to Vercel** — set the project **Root Directory** to `mobile`, then connect the repo. `mobile/vercel.json` runs `npm run build:web` and publishes `dist/`.
+**Deploy to Vercel**: set the project **Root Directory** to `mobile`, then connect the repo. `mobile/vercel.json` runs `npm run build:web` and publishes `dist/`.
 
-**Deploy to Netlify** — same root directory `mobile`; `mobile/netlify.toml` is included.
+**Deploy to Netlify**: same root directory `mobile`; `mobile/netlify.toml` is included.
 
 For Supabase email auth on web, add your site URL under **Authentication → URL configuration** (Site URL + redirect URLs).
 
@@ -149,4 +149,4 @@ OpenAPI docs: `http://localhost:8000/docs`.
 
 ## License
 
-Course / project use — adjust as needed.
+Course / project use. Adjust as needed.

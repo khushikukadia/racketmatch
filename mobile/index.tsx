@@ -6,7 +6,7 @@ import { AppSplash } from './src/components/AppSplash';
 
 /**
  * Register a tiny root first so `main` is always registered. The real `App` is
- * imported asynchronously — if a dependency throws during static import of App.tsx,
+ * imported asynchronously. If a dependency throws during static import of App.tsx,
  * Metro often shows nothing while the native shell says "main" was not registered.
  */
 function Bootstrap() {

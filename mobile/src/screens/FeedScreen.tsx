@@ -40,6 +40,8 @@ export function FeedScreen() {
   const navigation = useNavigation();
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [followingByUser, setFollowingByUser] = useState<Record<string, boolean>>({});
+  const [followBusyByUser, setFollowBusyByUser] = useState<Record<string, boolean>>({});
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [commentsByPost, setCommentsByPost] = useState<Record<string, Comment[]>>({});
@@ -47,12 +49,21 @@ export function FeedScreen() {
 
   const load = useCallback(async () => {
     try {
-      const data = await api.getFeed(apiToken);
-      setPosts(data);
+      const viewerId = session?.user?.id;
+      const [feed, following] = await Promise.all([
+        api.getFeed(apiToken),
+        viewerId ? api.getFollowing(apiToken, viewerId) : Promise.resolve([]),
+      ]);
+      setPosts(feed);
+      const nextFollowing: Record<string, boolean> = {};
+      for (const user of following) {
+        nextFollowing[user.id] = true;
+      }
+      setFollowingByUser(nextFollowing);
     } finally {
       setLoading(false);
     }
-  }, [apiToken]);
+  }, [apiToken, session?.user?.id]);
 
   useFocusEffect(
     useCallback(() => {
@@ -129,12 +140,22 @@ export function FeedScreen() {
     }
   };
 
-  const followAuthor = async (userId: string) => {
+  const toggleFollowAuthor = async (userId: string) => {
+    if (followBusyByUser[userId]) return;
+    const currentlyFollowing = !!followingByUser[userId];
+    setFollowBusyByUser((m) => ({ ...m, [userId]: true }));
+    setFollowingByUser((m) => ({ ...m, [userId]: !currentlyFollowing }));
     try {
-      await api.follow(apiToken, userId);
-      await load();
+      if (currentlyFollowing) {
+        await api.unfollow(apiToken, userId);
+      } else {
+        await api.follow(apiToken, userId);
+      }
     } catch (e) {
       console.warn(e);
+      setFollowingByUser((m) => ({ ...m, [userId]: currentlyFollowing }));
+    } finally {
+      setFollowBusyByUser((m) => ({ ...m, [userId]: false }));
     }
   };
 
@@ -167,6 +188,8 @@ export function FeedScreen() {
           const isOpen = !!openComments[p.id];
           const comments = commentsByPost[p.id] ?? [];
           const authorName = p.author?.name ?? 'Player';
+          const following = !!followingByUser[p.user_id];
+          const followBusy = !!followBusyByUser[p.user_id];
           return (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
@@ -184,8 +207,14 @@ export function FeedScreen() {
                   </Text>
                 </View>
                 {!isSelf ? (
-                  <Pressable style={styles.followPill} onPress={() => followAuthor(p.user_id)}>
-                    <Text style={styles.followText}>Follow</Text>
+                  <Pressable
+                    style={styles.followPill}
+                    onPress={() => toggleFollowAuthor(p.user_id)}
+                    disabled={followBusy}
+                  >
+                    <Text style={styles.followText}>
+                      {followBusy ? 'Saving...' : following ? 'Following' : 'Follow'}
+                    </Text>
                   </Pressable>
                 ) : null}
               </View>

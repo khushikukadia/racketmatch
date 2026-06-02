@@ -9,8 +9,7 @@ import { colors } from '../theme/colors';
 function MatchSplashTitle() {
   return (
     <View style={styles.matchTextWrap}>
-      <Text style={styles.matchTitle}>It's a</Text>
-      <Text style={styles.matchTitle}>match!</Text>
+      <Text style={styles.matchTitle}>It's a match!</Text>
     </View>
   );
 }
@@ -205,7 +204,7 @@ const styles = StyleSheet.create({
   matchTitle: {
     fontSize: 44,
     fontWeight: '800',
-    color: colors.primary,
+    color: '#1B4332',
     textAlign: 'center',
     lineHeight: 52,
   },
