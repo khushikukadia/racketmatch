@@ -38,6 +38,16 @@ const navTheme = {
   },
 };
 
+/**
+ * On web the JS stack normally lets `document.body` scroll for tall screens, but
+ * Expo Web locks the body's height/overflow — so a screen taller than the viewport
+ * gets clipped instead of scrolling. Forcing a bounded card height makes the inner
+ * ScrollViews scroll. No-op on native (native-stack handles this already).
+ */
+const webScrollableCard = (
+  isWebStack ? { cardStyle: { flex: 1 } } : undefined
+) as React.ComponentProps<typeof SetupStack.Navigator>['screenOptions'];
+
 function AuthNavigator() {
   return (
     <AuthStack.Navigator layout={screenLayout} screenOptions={{ headerShown: false }}>
@@ -52,6 +62,7 @@ function AppNavigator() {
   return (
     <AppStack.Navigator
       screenOptions={{
+        ...webScrollableCard,
         ...(isWebStack
           ? { headerBackTitle: '' }
           : { headerBackTitleVisible: false, headerBackButtonDisplayMode: 'minimal' }),
@@ -82,7 +93,7 @@ function AppNavigator() {
 
 function OnboardingNavigator() {
   return (
-    <SetupStack.Navigator>
+    <SetupStack.Navigator screenOptions={webScrollableCard}>
       <SetupStack.Screen
         name="Setup"
         component={OnboardingScreen}

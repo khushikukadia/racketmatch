@@ -112,7 +112,7 @@ export function OnboardingScreen() {
     >
       <AppBrand size="sm" showName={false} style={styles.brand} />
       <Text style={styles.h1}>Build your player card</Text>
-      <Text style={styles.sub}>Squash, tennis, pickleball — show how you like to play.</Text>
+      <Text style={styles.sub}>Squash, tennis, pickleball. Show how you like to play.</Text>
 
       <Text style={styles.label}>Name *</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Your name" />

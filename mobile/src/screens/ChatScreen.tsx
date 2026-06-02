@@ -77,12 +77,12 @@ export function ChatScreen({ navigation, route }: Props) {
     await api.createProposal(apiToken, matchId, {
       sport,
       proposed_time: when.toISOString(),
-      location: 'Open court — tap Messages to confirm',
+      location: 'Open court - tap Messages to confirm',
     });
     await api.sendMessage(
       apiToken,
       matchId,
-      `Suggested ${sport} — ${when.toLocaleString()} at our usual spot. Open the proposals list to accept.`
+      `Suggested ${sport}, ${when.toLocaleString()} at our usual spot. Open the proposals list to accept.`
     );
     await load();
   };

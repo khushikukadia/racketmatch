@@ -108,8 +108,11 @@ export function DiscoverScreen() {
     return (
       <View style={styles.center}>
         <AppBrand size="sm" showName={false} style={styles.emptyLogo} />
-        <Text style={styles.emptyTitle}>You're all caught up</Text>
-        <Text style={styles.emptySub}>Check back later for new players nearby.</Text>
+        <Text style={styles.emptyTitle}>No new players on the court</Text>
+        <Text style={styles.emptySub}>
+          You've swiped through everyone in the area. Take a water break and check back later for fresh
+          challengers.
+        </Text>
         <Pressable style={styles.reload} onPress={load}>
           <Text style={styles.reloadText}>Refresh</Text>
         </Pressable>

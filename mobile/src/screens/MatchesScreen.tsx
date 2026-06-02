@@ -50,7 +50,10 @@ export function MatchesScreen() {
           refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
           contentContainerStyle={rows.length === 0 ? styles.listEmpty : undefined}
           ListEmptyComponent={
-            <Text style={styles.empty}>No matches yet — keep swiping on Discover.</Text>
+            <Text style={styles.empty}>
+              No matches yet, your perfect doubles partner is still out there. Head to Discover and keep
+              swinging.
+            </Text>
           }
           renderItem={({ item }) => (
             <Pressable
