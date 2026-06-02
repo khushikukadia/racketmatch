@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Alert,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -104,7 +105,11 @@ export function OnboardingScreen() {
   };
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.inner}>
+    <ScrollView
+      style={styles.root}
+      contentContainerStyle={styles.inner}
+      keyboardShouldPersistTaps="handled"
+    >
       <AppBrand size="sm" showName={false} style={styles.brand} />
       <Text style={styles.h1}>Build your player card</Text>
       <Text style={styles.sub}>Squash, tennis, pickleball — show how you like to play.</Text>
@@ -210,11 +215,17 @@ export function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
+  root: {
+    flex: 1,
+    backgroundColor: colors.background,
+    // On web, give the scroll container an explicit bounded height so it scrolls
+    // instead of growing with its content and getting clipped by the parent.
+    ...(Platform.OS === 'web' ? { height: '100%' as const } : null),
+  },
   inner: { padding: 20, paddingBottom: 48 },
   brand: { alignSelf: 'center', marginBottom: 8 },
-  h1: { fontSize: 26, fontWeight: '800', color: colors.primary },
-  sub: { color: colors.textSecondary, marginBottom: 20, marginTop: 6 },
+  h1: { fontSize: 26, fontWeight: '800', color: colors.primary, textAlign: 'center' },
+  sub: { color: colors.textSecondary, marginBottom: 20, marginTop: 6, textAlign: 'center' },
   label: { fontWeight: '600', color: colors.text, marginBottom: 6, marginTop: 12 },
   input: {
     backgroundColor: colors.white,
