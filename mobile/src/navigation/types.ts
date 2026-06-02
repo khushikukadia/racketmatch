@@ -4,6 +4,7 @@ export type AuthStackParamList = {
   Login: undefined;
   Signup: undefined;
   Forgot: undefined;
+  ConfirmEmail: { email?: string; reason?: 'signup' | 'unconfirmed' };
 };
 
 export type MainTabParamList = {

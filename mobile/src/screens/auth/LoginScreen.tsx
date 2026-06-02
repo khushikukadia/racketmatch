@@ -25,14 +25,22 @@ export function LoginScreen({ navigation }: { navigation: Nav }) {
   const [busy, setBusy] = useState(false);
 
   const onLogin = async () => {
+    const trimmedEmail = email.trim();
     setBusy(true);
     try {
       const { error } = await getSupabase().auth.signInWithPassword({
-        email: email.trim(),
+        email: trimmedEmail,
         password,
       });
       if (error) {
-        Alert.alert('Login failed', error.message);
+        const unconfirmed =
+          error.code === 'email_not_confirmed' ||
+          /email not confirmed|not confirmed/i.test(error.message);
+        if (unconfirmed) {
+          navigation.navigate('ConfirmEmail', { email: trimmedEmail, reason: 'unconfirmed' });
+        } else {
+          Alert.alert('Login failed', error.message);
+        }
       }
     } finally {
       setBusy(false);

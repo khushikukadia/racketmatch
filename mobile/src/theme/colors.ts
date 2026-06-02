@@ -6,6 +6,7 @@ export const colors = {
   primarySoft: '#3A7056',
   text: '#1A1A1A',
   textSecondary: '#5C6670',
+  placeholder: '#A8B0B9',
   border: '#E8EBEF',
   cardShadow: 'rgba(13, 79, 44, 0.08)',
   danger: '#C62828',

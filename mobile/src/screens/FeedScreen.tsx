@@ -15,7 +15,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { Comment, FeedPost } from '../api/types';
-import { colors, sportAccent } from '../theme/colors';
+import { colors } from '../theme/colors';
 import { buttonStyles } from '../theme/buttons';
 
 function formatTimeAgo(iso: string): string {
@@ -163,13 +163,12 @@ export function FeedScreen() {
         keyboardShouldPersistTaps="handled"
         ListEmptyComponent={<Text style={styles.empty}>No posts yet. Log your first session.</Text>}
         renderItem={({ item: p }) => {
-          const accent = sportAccent(p.sport);
           const isSelf = p.user_id === session?.user?.id;
           const isOpen = !!openComments[p.id];
           const comments = commentsByPost[p.id] ?? [];
+          const authorName = p.author?.name ?? 'Player';
           return (
             <View style={styles.card}>
-              <View style={[styles.accentStripe, { backgroundColor: accent.secondary }]} />
               <View style={styles.cardHeader}>
                 <Image
                   source={{
@@ -178,7 +177,7 @@ export function FeedScreen() {
                   style={styles.avatar}
                 />
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.author}>{p.author?.name ?? 'Player'}</Text>
+                  <Text style={styles.author}>{authorName}</Text>
                   <Text style={styles.meta}>
                     {p.sport}
                     {p.location ? ` · ${p.location}` : ''}
@@ -193,29 +192,46 @@ export function FeedScreen() {
               {p.image_url ? (
                 <Image source={{ uri: p.image_url }} style={styles.postImg} />
               ) : null}
-              {p.caption ? <Text style={styles.caption}>{p.caption}</Text> : null}
+              <View style={styles.actions}>
+                <Pressable hitSlop={8} onPress={() => toggleLike(p)}>
+                  <Feather
+                    name="heart"
+                    size={26}
+                    color={p.liked_by_me ? colors.danger : colors.text}
+                  />
+                </Pressable>
+                <Pressable hitSlop={8} onPress={() => toggleComments(p.id)}>
+                  <Feather name="message-circle" size={26} color={colors.text} />
+                </Pressable>
+              </View>
+
+              {p.like_count > 0 ? (
+                <Text style={styles.likes}>
+                  {p.like_count} {p.like_count === 1 ? 'like' : 'likes'}
+                </Text>
+              ) : null}
+
+              {p.caption ? (
+                <Text style={styles.caption}>
+                  <Text style={styles.captionAuthor}>{authorName} </Text>
+                  {p.caption}
+                </Text>
+              ) : null}
+
               {p.tagged_users.length > 0 ? (
                 <Text style={styles.tags}>
                   With {p.tagged_users.map((t) => t.name).join(', ')}
                 </Text>
               ) : null}
-              <View style={styles.actions}>
-                <Pressable style={styles.actionBtn} onPress={() => toggleLike(p)}>
-                  <Feather
-                    name="heart"
-                    size={20}
-                    color={p.liked_by_me ? colors.danger : colors.textSecondary}
-                    style={p.liked_by_me ? styles.heartFilled : undefined}
-                  />
-                  <Text style={[styles.actionText, p.liked_by_me && styles.actionTextActive]}>
-                    {p.like_count}
+
+              {p.comment_count > 0 && !isOpen ? (
+                <Pressable onPress={() => toggleComments(p.id)}>
+                  <Text style={styles.viewComments}>
+                    View{' '}
+                    {p.comment_count === 1 ? '1 comment' : `all ${p.comment_count} comments`}
                   </Text>
                 </Pressable>
-                <Pressable style={styles.actionBtn} onPress={() => toggleComments(p.id)}>
-                  <Feather name="message-square" size={20} color={colors.textSecondary} />
-                  <Text style={styles.actionText}>{p.comment_count}</Text>
-                </Pressable>
-              </View>
+              ) : null}
 
               <Text style={styles.timeAgo}>{formatTimeAgo(p.created_at)}</Text>
 
@@ -292,46 +308,43 @@ const styles = StyleSheet.create({
   },
   addBtn: { padding: 8 },
   addBtnPressed: { opacity: 0.55 },
-  list: { paddingHorizontal: 12, paddingBottom: 24 },
+  list: { paddingBottom: 24 },
   card: {
     backgroundColor: colors.white,
-    borderRadius: 16,
-    marginBottom: 14,
-    overflow: 'hidden',
-    borderWidth: 1,
+    marginBottom: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
   },
-  accentStripe: { height: 3, width: '100%' },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 10 },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.border },
-  author: { fontWeight: '700', fontSize: 16, color: colors.text },
-  meta: { color: colors.textSecondary, fontSize: 13, textTransform: 'capitalize' },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, gap: 10 },
+  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.border },
+  author: { fontWeight: '600', fontSize: 14, color: colors.text },
+  meta: { color: colors.textSecondary, fontSize: 12, textTransform: 'capitalize' },
   followPill: {
-    borderWidth: 1,
-    borderColor: colors.primarySoft,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
-  followText: { color: colors.primarySoft, fontWeight: '600', fontSize: 13 },
-  postImg: { width: '100%', height: 200, backgroundColor: colors.border },
-  caption: { paddingHorizontal: 12, paddingTop: 8, fontSize: 16, color: colors.text },
-  tags: { paddingHorizontal: 12, color: colors.primaryMuted, marginTop: 4, fontSize: 14 },
+  followText: { color: colors.primarySoft, fontWeight: '700', fontSize: 14 },
+  postImg: { width: '100%', aspectRatio: 1, backgroundColor: colors.border },
+  caption: { paddingHorizontal: 12, paddingTop: 4, fontSize: 14, color: colors.text, lineHeight: 19 },
+  captionAuthor: { fontWeight: '600', color: colors.text },
+  tags: { paddingHorizontal: 12, color: colors.primaryMuted, marginTop: 4, fontSize: 13 },
+  likes: { paddingHorizontal: 12, paddingTop: 6, fontWeight: '600', fontSize: 14, color: colors.text },
+  viewComments: { paddingHorizontal: 12, paddingTop: 4, fontSize: 14, color: colors.textSecondary },
   actions: {
     flexDirection: 'row',
-    gap: 22,
+    gap: 16,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingTop: 10,
+    paddingBottom: 2,
   },
-  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  actionText: { fontSize: 14, color: colors.textSecondary, fontWeight: '600' },
-  actionTextActive: { color: colors.danger },
-  heartFilled: { textShadowColor: colors.danger },
   timeAgo: {
     paddingHorizontal: 12,
-    paddingBottom: 4,
-    fontSize: 12,
+    paddingTop: 6,
+    paddingBottom: 10,
+    fontSize: 11,
     color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
   },
   commentsBlock: {
     paddingHorizontal: 12,

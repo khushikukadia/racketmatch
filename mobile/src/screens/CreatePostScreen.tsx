@@ -88,13 +88,17 @@ export function CreatePostScreen({ navigation }: { navigation: Nav }) {
         style={styles.photoPicker}
       />
       <Text style={styles.label}>Tag match partners</Text>
-      {matches.map((m) => (
-        <Pressable key={m.match.id} style={styles.tagRow} onPress={() => toggleTag(m.other_user.id)}>
-          <Text style={styles.tagText}>
-            {tags[m.other_user.id] ? '☑' : '☐'} {m.other_user.name}
-          </Text>
-        </Pressable>
-      ))}
+      {matches.length === 0 ? (
+        <Text style={styles.tagEmpty}>No matches yet — match with players to tag them here.</Text>
+      ) : (
+        matches.map((m) => (
+          <Pressable key={m.match.id} style={styles.tagRow} onPress={() => toggleTag(m.other_user.id)}>
+            <Text style={styles.tagText}>
+              {tags[m.other_user.id] ? '☑' : '☐'} {m.other_user.name}
+            </Text>
+          </Pressable>
+        ))
+      )}
       <Pressable
         style={[buttonStyles.primary, styles.btn, busy && buttonStyles.disabled]}
         onPress={submit}
@@ -133,6 +137,7 @@ const styles = StyleSheet.create({
   tall: { minHeight: 100, textAlignVertical: 'top' },
   tagRow: { paddingVertical: 10, borderBottomWidth: 1, borderColor: colors.border },
   tagText: { fontSize: 16, color: colors.text },
+  tagEmpty: { fontSize: 14, color: colors.textSecondary, paddingVertical: 8, fontStyle: 'italic' },
   btn: { marginTop: 24 },
   photoPicker: { marginBottom: 4 },
 });

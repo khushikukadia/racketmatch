@@ -15,15 +15,19 @@ export function SignupScreen({ navigation }: { navigation: Nav }) {
   const [busy, setBusy] = useState(false);
 
   const onSignup = async () => {
+    const trimmedEmail = email.trim();
     setBusy(true);
     try {
-      const { error } = await getSupabase().auth.signUp({ email: email.trim(), password });
+      const { data, error } = await getSupabase().auth.signUp({ email: trimmedEmail, password });
       if (error) {
         Alert.alert('Signup failed', error.message);
         return;
       }
-      Alert.alert('Check your email', 'Confirm your account if required, then log in.');
-      navigation.navigate('Login');
+      // When email confirmation is required, Supabase returns no active session.
+      // If a session exists, the auth listener will swap navigators automatically.
+      if (!data.session) {
+        navigation.navigate('ConfirmEmail', { email: trimmedEmail, reason: 'signup' });
+      }
     } finally {
       setBusy(false);
     }

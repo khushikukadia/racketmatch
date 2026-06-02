@@ -115,7 +115,13 @@ export function OnboardingScreen() {
       <Text style={styles.sub}>Squash, tennis, pickleball. Show how you like to play.</Text>
 
       <Text style={styles.label}>Name *</Text>
-      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Your name" />
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Your name"
+        placeholderTextColor={colors.placeholder}
+      />
 
       <Text style={styles.label}>Bio</Text>
       <TextInput
@@ -123,11 +129,18 @@ export function OnboardingScreen() {
         value={bio}
         onChangeText={setBio}
         placeholder="Favorite courts, playing style…"
+        placeholderTextColor={colors.placeholder}
         multiline
       />
 
       <Text style={styles.label}>City</Text>
-      <TextInput style={styles.input} value={city} onChangeText={setCity} placeholder="e.g. Oakland" />
+      <TextInput
+        style={styles.input}
+        value={city}
+        onChangeText={setCity}
+        placeholder="e.g. Oakland"
+        placeholderTextColor={colors.placeholder}
+      />
 
       <Text style={styles.label}>Profile photo (optional)</Text>
       <PhotoPickerField
@@ -196,6 +209,7 @@ export function OnboardingScreen() {
                   value={f.locations}
                   onChangeText={(txt) => setBySport((p) => ({ ...p, [sport]: { ...f, locations: txt } }))}
                   placeholder="Club name, public courts…"
+                  placeholderTextColor={colors.placeholder}
                 />
               </>
             ) : null}

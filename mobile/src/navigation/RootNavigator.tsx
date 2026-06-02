@@ -7,6 +7,7 @@ import { AppBrand } from '../components/AppBrand';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignupScreen } from '../screens/auth/SignupScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
+import { ConfirmEmailScreen } from '../screens/auth/ConfirmEmailScreen';
 import { colors } from '../theme/colors';
 import type { AppStackParamList, AuthStackParamList } from './types';
 
@@ -54,6 +55,7 @@ function AuthNavigator() {
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="Signup" component={SignupScreen} />
       <AuthStack.Screen name="Forgot" component={ForgotPasswordScreen} />
+      <AuthStack.Screen name="ConfirmEmail" component={ConfirmEmailScreen} />
     </AuthStack.Navigator>
   );
 }
