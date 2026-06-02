@@ -1,4 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
+import { Platform } from 'react-native';
 import { getSupabase } from './supabase';
 
 export const STORAGE_BUCKETS = {
@@ -43,9 +44,11 @@ export async function pickImageFromLibrary(options?: {
   aspect?: [number, number];
   allowsEditing?: boolean;
 }): Promise<ImagePicker.ImagePickerAsset | null> {
-  const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!perm.granted) {
-    throw new Error('Allow photo library access to choose an image.');
+  if (Platform.OS !== 'web') {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      throw new Error('Allow photo library access to choose an image.');
+    }
   }
 
   const result = await ImagePicker.launchImageLibraryAsync({

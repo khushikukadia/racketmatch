@@ -4,7 +4,7 @@
 
 ## Repository layout
 
-- `mobile/` — Expo app (tabs: Discover, Matches, Feed, Profile).
+- `mobile/` — Expo app for **iOS, Android, and web** (tabs: Discover, Matches, Feed, Profile). Same codebase; web builds to static files in `mobile/dist/`.
 - `backend/` — FastAPI API, SQLAlchemy 2.x models, Alembic migrations, seed script.
 
 ## Prerequisites
@@ -58,7 +58,7 @@ Leave `SUPABASE_JWT_SECRET` set to any non-empty placeholder if you only use moc
 
 ### CORS
 
-`CORS_ORIGINS` in `.env` should include your Expo dev URLs (e.g. `http://localhost:8081`). Use your machine’s LAN IP for a physical device.
+`CORS_ORIGINS` in `.env` should include your Expo dev URLs (e.g. `http://localhost:8081`) and, for web testers, your deployed site (e.g. `https://racketmatch.vercel.app`). Use your machine’s LAN IP for a physical device.
 
 ## Mobile setup
 
@@ -67,8 +67,36 @@ cd mobile
 cp .env.example .env
 # Set EXPO_PUBLIC_API_URL to your machine IP if using a device (e.g. http://192.168.1.10:8000)
 npm install
-npx expo start
+npx expo start          # phone simulators / Expo Go
+npx expo start --web    # browser at http://localhost:8081
 ```
+
+### Web (shareable test build)
+
+The web app lives in **`mobile/`** (not a separate repo) so it shares screens, API client, and auth with the native app.
+
+**Local web dev**
+
+```bash
+cd mobile
+npm run web
+```
+
+**Production static export** (output: `mobile/dist/`)
+
+```bash
+cd mobile
+npm run build:web
+npx serve dist   # optional: preview locally
+```
+
+Set `EXPO_PUBLIC_*` env vars before `build:web` (Vercel/Netlify project env or a `.env` file). The API must allow your web origin in `CORS_ORIGINS`.
+
+**Deploy to Vercel** — set the project **Root Directory** to `mobile`, then connect the repo. `mobile/vercel.json` runs `npm run build:web` and publishes `dist/`.
+
+**Deploy to Netlify** — same root directory `mobile`; `mobile/netlify.toml` is included.
+
+For Supabase email auth on web, add your site URL under **Authentication → URL configuration** (Site URL + redirect URLs).
 
 ### Environment variables (`mobile/.env`)
 

@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createAppStackNavigator, isWebStack, screenLayout } from './createAppStack';
 import { StyleSheet, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { AppBrand } from '../components/AppBrand';
@@ -22,9 +22,9 @@ const FollowListScreen = lazy(() =>
   import('../screens/FollowListScreen').then((m) => ({ default: m.FollowListScreen }))
 );
 
-const AuthStack = createNativeStackNavigator<AuthStackParamList>();
-const AppStack = createNativeStackNavigator<AppStackParamList>();
-const SetupStack = createNativeStackNavigator<{ Setup: undefined }>();
+const AuthStack = createAppStackNavigator<AuthStackParamList>();
+const AppStack = createAppStackNavigator<AppStackParamList>();
+const SetupStack = createAppStackNavigator<{ Setup: undefined }>();
 
 const navTheme = {
   ...DefaultTheme,
@@ -40,7 +40,7 @@ const navTheme = {
 
 function AuthNavigator() {
   return (
-    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+    <AuthStack.Navigator layout={screenLayout} screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="Signup" component={SignupScreen} />
       <AuthStack.Screen name="Forgot" component={ForgotPasswordScreen} />
@@ -52,8 +52,9 @@ function AppNavigator() {
   return (
     <AppStack.Navigator
       screenOptions={{
-        headerBackTitleVisible: false,
-        headerBackButtonDisplayMode: 'minimal',
+        ...(isWebStack
+          ? { headerBackTitle: '' }
+          : { headerBackTitleVisible: false, headerBackButtonDisplayMode: 'minimal' }),
         headerTintColor: colors.primary,
       }}
     >
@@ -62,9 +63,19 @@ function AppNavigator() {
         component={MainTabs}
         options={{ headerShown: false, headerBackTitle: '' }}
       />
-      <AppStack.Screen name="Chat" component={ChatScreen} options={{ title: 'Chat' }} />
-      <AppStack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: 'Log session' }} />
-      <AppStack.Screen name="FollowList" component={FollowListScreen} options={{ title: 'Followers' }} />
+      <AppStack.Screen name="Chat" component={ChatScreen} options={{ title: 'Chat' }} layout={screenLayout} />
+      <AppStack.Screen
+        name="CreatePost"
+        component={CreatePostScreen}
+        options={{ title: 'Log session' }}
+        layout={screenLayout}
+      />
+      <AppStack.Screen
+        name="FollowList"
+        component={FollowListScreen}
+        options={{ title: 'Followers' }}
+        layout={screenLayout}
+      />
     </AppStack.Navigator>
   );
 }
@@ -76,6 +87,7 @@ function OnboardingNavigator() {
         name="Setup"
         component={OnboardingScreen}
         options={{ title: 'Your profile' }}
+        layout={screenLayout}
       />
     </SetupStack.Navigator>
   );

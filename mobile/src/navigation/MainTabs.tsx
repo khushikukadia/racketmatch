@@ -6,6 +6,7 @@ import { MatchesScreen } from '../screens/MatchesScreen';
 import { FeedScreen } from '../screens/FeedScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/colors';
+import { screenLayout } from './createAppStack';
 import type { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -15,6 +16,7 @@ export function MainTabs() {
 
   return (
     <Tab.Navigator
+      layout={screenLayout}
       screenOptions={{
         headerShown: false,
         sceneStyle: {

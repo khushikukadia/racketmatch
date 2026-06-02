@@ -27,7 +27,13 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "name": "RacketMatch",
+      "shortName": "RacketMatch",
+      "description": "Find racket-sport partners — squash, tennis, pickleball.",
+      "themeColor": "#2E7D32",
+      "backgroundColor": "#FAFAFA"
     },
     "plugins": [
       [
