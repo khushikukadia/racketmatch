@@ -147,7 +147,7 @@ export function DiscoverScreen() {
           <Text style={styles.circleText}>Pass</Text>
         </Pressable>
         <Pressable style={[styles.circle, styles.like]} onPress={() => onSwipe('like')} disabled={busy}>
-          <Text style={[styles.circleText, styles.likeText]}>Like</Text>
+          <Text style={[styles.circleText, styles.likeText]}>Smash</Text>
         </Pressable>
       </View>
     </View>

@@ -16,6 +16,14 @@ export function SignupScreen({ navigation }: { navigation: Nav }) {
 
   const onSignup = async () => {
     const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
+      Alert.alert('Missing info', 'Enter both an email and a password to continue.');
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert('Password too short', 'Your password must be at least 6 characters.');
+      return;
+    }
     setBusy(true);
     try {
       const { data, error } = await getSupabase().auth.signUp({ email: trimmedEmail, password });
@@ -23,11 +31,28 @@ export function SignupScreen({ navigation }: { navigation: Nav }) {
         Alert.alert('Signup failed', error.message);
         return;
       }
+      // Supabase's enumeration protection returns a "fake" success for an email
+      // that already exists: no error, no session, and an empty identities array.
+      // No confirmation email is sent in that case, so steer the user to log in.
+      if (data.user && (data.user.identities?.length ?? 0) === 0) {
+        Alert.alert(
+          'Account already exists',
+          'That email is already registered. Try logging in instead.'
+        );
+        return;
+      }
       // When email confirmation is required, Supabase returns no active session.
       // If a session exists, the auth listener will swap navigators automatically.
       if (!data.session) {
         navigation.navigate('ConfirmEmail', { email: trimmedEmail, reason: 'signup' });
       }
+    } catch (e) {
+      // signUp() throws (rather than returning an error) on network failures, so
+      // surface it instead of silently swallowing it and leaving the button dead.
+      Alert.alert(
+        'Signup failed',
+        e instanceof Error ? e.message : 'Network error. Check your connection and try again.'
+      );
     } finally {
       setBusy(false);
     }
